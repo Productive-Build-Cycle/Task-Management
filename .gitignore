@@ -1,3 +1,39 @@
-# Visual Studio
-.vs/
+# User-specific files
+*.rsuser
 *.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# VS cache/options directory
+.vs/
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+
+# Test results
+[Tt]est[Rr]esult*/ 
+*.trx
+
+# C++ cache files
+*.VC.db
+*.opensdf
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+/packages/
+
+# Node / JavaScript
+node_modules/
+
+# Publish output
+publish/
