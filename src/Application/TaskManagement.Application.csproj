@@ -8,9 +8,15 @@
 
   <ItemGroup>
     <Folder Include="Extentions\" />
-    <Folder Include="Services\Contracts\" />
     <Folder Include="Services\Dtos\" />
-    <Folder Include="Services\Implementations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InfraStructure\TaskManagement.InfraStructure.csproj" />
   </ItemGroup>
 
 </Project>
