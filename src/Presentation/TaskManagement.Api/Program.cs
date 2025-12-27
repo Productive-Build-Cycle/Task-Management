@@ -35,8 +35,6 @@ builder.Services.AddCors();
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
-
 app.UseAuthorization();
 
 app.MapControllers();
