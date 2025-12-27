@@ -25,6 +25,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     app.MapOpenApi();
+}
 
 builder.Services.AddCors();
 
