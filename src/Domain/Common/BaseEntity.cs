@@ -10,7 +10,7 @@ public abstract class BaseEntity<T>
 
     public DateTime CreatedDate { get; set; } = DateTime.Now;
     public DateTime UpdatedDate { get; set; } = DateTime.Now;
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; set; } = false;
     public void MarkAsUpdated()
     {
         UpdatedDate = DateTime.Now;
