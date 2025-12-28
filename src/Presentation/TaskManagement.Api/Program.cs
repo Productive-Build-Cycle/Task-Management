@@ -1,4 +1,5 @@
 using Application;
+using InfraStructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,10 @@ builder.Services.AddOpenApi();
 
 #region Add Dependecies
 
-builder.Services.RegisterApplicationConfigurations();
+builder.Services
+    .RegisterApplicationConfigurations()
+    .RegisterInfraStructureConfigurations(builder.Configuration)
+    ;
 
 #endregion Add Dependecies
 
@@ -25,6 +29,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     app.MapOpenApi();
+}
 
 builder.Services.AddCors();
 
