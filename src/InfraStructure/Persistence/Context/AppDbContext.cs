@@ -3,14 +3,9 @@ using TaskManagement.Domain.Entities;
 
 namespace TaskManagement.InfraStructure.Persistence.Context;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-        
-    }
-    
-    public DbSet<TaskItem> Tasks { get; set; }
+    public DbSet<TaskItem> TaskItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,7 +16,8 @@ public class AppDbContext : DbContext
         {
             modelBuilder.Entity(item.ClrType).Property<bool>("IsDeleted").HasDefaultValue(false);
             modelBuilder.Entity(item.ClrType).Property<DateTime>("CreatedDate").HasMaxLength(50);
-            modelBuilder.Entity(item.ClrType).Property<DateTime>("UpdatedDate").HasMaxLength(50);
+            modelBuilder.Entity(item.ClrType).Property<DateTime?>("UpdatedDate").HasDefaultValue(null)
+                .HasMaxLength(50);
         }
     }
 }

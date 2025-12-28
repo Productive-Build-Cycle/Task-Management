@@ -9,7 +9,7 @@ public abstract class BaseEntity<T>
     public Guid GuidRow { get; set; } = Guid.NewGuid();
 
     public DateTime CreatedDate { get; set; } = DateTime.Now;
-    public DateTime UpdatedDate { get; set; } = DateTime.Now;
+    public DateTime? UpdatedDate { get; set; }
     public bool IsDeleted { get; set; } = false;
     public void MarkAsUpdated()
     {

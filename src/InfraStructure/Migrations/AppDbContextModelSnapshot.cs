@@ -58,7 +58,7 @@ namespace TaskManagement.InfraStructure.Migrations
                     b.Property<byte>("Priority")
                         .HasColumnType("tinyint");
 
-                    b.Property<DateTime>("UpdatedDate")
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasMaxLength(50)
                         .HasColumnType("datetime2");
 
@@ -72,7 +72,7 @@ namespace TaskManagement.InfraStructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("TaskItems");
                 });
 #pragma warning restore 612, 618
         }
