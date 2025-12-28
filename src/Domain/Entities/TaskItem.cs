@@ -15,7 +15,7 @@ public class TaskItem : BaseEntity<long>
 
     public string? Description { get; set; }
 
-    public required WorkFlow WorkFlow { get; set; }
+    public WorkFlow WorkFlow { get; set; } = WorkFlow.TODO;
 
     public DateTime? DueDate { get; set; }
 

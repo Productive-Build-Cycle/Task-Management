@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Extentions\" />
-    <Folder Include="Services\Dtos\" />
   </ItemGroup>
 
   <ItemGroup>
