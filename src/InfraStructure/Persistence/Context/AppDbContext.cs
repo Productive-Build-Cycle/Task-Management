@@ -10,6 +10,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<TaskItem>()
+            .ToTable("TaskItems", "task");
+        
         modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
 
         foreach (var item in modelBuilder.Model.GetEntityTypes())

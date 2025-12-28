@@ -12,7 +12,7 @@ using TaskManagement.InfraStructure.Persistence.Context;
 namespace TaskManagement.InfraStructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251228080158_initial")]
+    [Migration("20251228090026_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -75,7 +75,7 @@ namespace TaskManagement.InfraStructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TaskItems");
+                    b.ToTable("TaskItems", "task");
                 });
 #pragma warning restore 612, 618
         }

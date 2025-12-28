@@ -72,7 +72,7 @@ namespace TaskManagement.InfraStructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TaskItems");
+                    b.ToTable("TaskItems", "task");
                 });
 #pragma warning restore 612, 618
         }

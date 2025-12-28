@@ -11,8 +11,12 @@ namespace TaskManagement.InfraStructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "task");
+
             migrationBuilder.CreateTable(
                 name: "TaskItems",
+                schema: "task",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -38,7 +42,8 @@ namespace TaskManagement.InfraStructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TaskItems");
+                name: "TaskItems",
+                schema: "task");
         }
     }
 }

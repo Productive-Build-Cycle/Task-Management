@@ -13,7 +13,7 @@ public static class InfrastructureConfiguration
         )
     {
         RegisterSqlServer(services, configuration);
-        RegisterServices(services);
+        RegisterRepositories(services);
         
         return services;
     }
@@ -27,12 +27,12 @@ public static class InfrastructureConfiguration
     }
     #endregion Register SqlServer
     
-    #region Register Services
+    #region Register Repositories
 
-    private static void RegisterServices(this IServiceCollection services)
+    private static void RegisterRepositories(this IServiceCollection services)
     {
         services.AddScoped<ITaskRepository, TaskRepository>();
     }
 
-    #endregion Register Services
+    #endregion Register Repositories
 }
