@@ -1,9 +1,8 @@
-using TaskManagement.Domain.Enum;
-
 namespace Application.Services.Contracts.Task;
 
 using TaskManagement.Domain.Entities;
 using Application.Services.Dtos;
+using TaskManagement.Domain.Enum;
 public interface ITaskService
 {
     Task<List<TaskItem>> GetAllAsync();

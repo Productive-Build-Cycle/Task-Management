@@ -1,5 +1,3 @@
-using TaskManagement.Domain.Enum;
-
 namespace Application.Services.Implementations.Task;
 
 using Contracts;
@@ -7,6 +5,7 @@ using Application.Services.Contracts.Task;
 using TaskManagement.Domain.Entities;
 using TaskManagement.InfraStructure.Persistence.Repositories.Interfaces;
 using Dtos;
+using TaskManagement.Domain.Enum;
 public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
@@ -57,9 +56,10 @@ public class TaskService : ITaskService
             throw new ArgumentException("DueDate must be in the future");
         }
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
-        if (taskItem == null)
+        if (taskItem is null)
         {
-            
+            throw new ArgumentException("item not found");
+            //TODO HANDLE WITH RESULT PATTERN SOON
         }
         taskItem.Name = request.Name;
         taskItem.Description = request.Description;
@@ -78,9 +78,11 @@ public class TaskService : ITaskService
     public async void ChangeWorkFlow(WorkFlow newWorkFlow, Guid id)
     {
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
-        if (taskItem == null)
+        if (taskItem is null)
         {
+            throw new ArgumentException("item not found");
             
+            // TODO HANDLE WITH RESULT PATTERN SOON
         }
         taskItem.WorkFlow = newWorkFlow;
         _taskRepository.Update(taskItem);
@@ -90,9 +92,10 @@ public class TaskService : ITaskService
     public async void ChangePriority(Priority newPriority, Guid id)
     {
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
-        if (taskItem == null)
+        if (taskItem is null)
         {
-            
+            throw new ArgumentException("item not found");
+            // TODO HANDLE WITH RESULT PATTERN SOON
         }
         taskItem.Priority = newPriority;
         _taskRepository.Update(taskItem);
