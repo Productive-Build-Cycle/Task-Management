@@ -1,11 +1,12 @@
 namespace Application.Services.Implementations.Task;
 
-using Contracts;
+using TaskManagement.InfraStructure;
 using Application.Services.Contracts.Task;
 using TaskManagement.Domain.Entities;
 using TaskManagement.InfraStructure.Persistence.Repositories.Interfaces;
 using Dtos;
 using TaskManagement.Domain.Enum;
+
 public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
@@ -17,14 +18,14 @@ public class TaskService : ITaskService
         _unitOfWork = unitOfWork;
     }
 
-    public Task<List<TaskItem>> GetAllAsync()
+    public async Task<List<TaskItem>> GetAllAsync()
     {
-        return _taskRepository.GetAllAsync();
+        return await _taskRepository.GetAllAsync();
     }
 
-    public Task<TaskItem?> GetByIdAsync(Guid id)
+    public async Task<TaskItem?> GetByIdAsync(Guid id)
     {
-        return _taskRepository.GetByIdAsync(id);
+        return await _taskRepository.GetByIdAsync(id);
     }
 
     public async Task<TaskItem> AddAsync(TaskCreateDto request)

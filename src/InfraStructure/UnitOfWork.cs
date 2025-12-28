@@ -1,7 +1,7 @@
-namespace Application.Services.Implementations;
+namespace TaskManagement.InfraStructure;
 
-using Application.Services.Contracts;
 using TaskManagement.InfraStructure.Persistence.Context;
+
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _appDbContext;

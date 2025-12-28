@@ -1,4 +1,6 @@
-﻿namespace Application;
+﻿using TaskManagement.InfraStructure;
+
+namespace Application;
 
 using Application.Services.Contracts;
 using Application.Services.Contracts.Task;
@@ -22,7 +24,6 @@ public static class ApplicationConfigurations
     {
         services.AddScoped<ICacheService, InMemmoryService>();
         services.AddScoped<ITaskService, TaskService>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 
     #endregion Register Services

@@ -21,9 +21,9 @@ public class TaskRepository : ITaskRepository
         return await q.ToListAsync();
     }
 
-    public Task<TaskItem?> GetByIdAsync(Guid id)
+    public async Task<TaskItem?> GetByIdAsync(Guid id)
     {
-       return _appDbContext.TaskItems.FirstOrDefaultAsync(t => t.GuidRow == id);
+       return await _appDbContext.TaskItems.FirstOrDefaultAsync(t => t.GuidRow == id);
     }
 
     public void Create(TaskItem entity)

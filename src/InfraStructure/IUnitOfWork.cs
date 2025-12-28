@@ -1,4 +1,4 @@
-namespace Application.Services.Contracts;
+namespace TaskManagement.InfraStructure;
 
 public interface IUnitOfWork
 {
