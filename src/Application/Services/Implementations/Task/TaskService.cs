@@ -18,17 +18,17 @@ public class TaskService : ITaskService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<List<TaskItem>> GetAllAsync()
+    public async Task<List<TaskItem>> GetAllAsync() //TODO HANDLE WITH RESULT PATTERN SOON
     {
         return await _taskRepository.GetAllAsync();
     }
 
-    public async Task<TaskItem?> GetByIdAsync(Guid id)
+    public async Task<TaskItem?> GetByIdAsync(Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
     {
         return await _taskRepository.GetByIdAsync(id);
     }
 
-    public async Task<TaskItem> AddAsync(TaskCreateDto request)
+    public async Task<TaskItem> AddAsync(TaskCreateDto request) //TODO HANDLE WITH RESULT PATTERN SOON
     {
         if (request.DueDate <= DateTime.Now)
         {
@@ -50,7 +50,7 @@ public class TaskService : ITaskService
         return taskItem;
     }
 
-    public async Task<TaskItem> Update(TaskUpdateDto request, Guid id)
+    public async Task<TaskItem> Update(TaskUpdateDto request, Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
     {
         if (request.DueDate <= DateTime.Now)
         {
@@ -70,13 +70,13 @@ public class TaskService : ITaskService
          await _unitOfWork.SaveChangesAsync();
          return taskItem;
     }
-    public void Delete(TaskItem entity)
+    public void Delete(TaskItem entity) //TODO HANDLE WITH RESULT PATTERN SOON
     {
         _taskRepository.Delete(entity);
         _unitOfWork.SaveChanges();
     }
 
-    public async void ChangeWorkFlow(WorkFlow newWorkFlow, Guid id)
+    public async void ChangeWorkFlow(WorkFlow newWorkFlow, Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
     {
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
         if (taskItem is null)
@@ -90,7 +90,7 @@ public class TaskService : ITaskService
         await _unitOfWork.SaveChangesAsync();
     }
 
-    public async void ChangePriority(Priority newPriority, Guid id)
+    public async void ChangePriority(Priority newPriority, Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
     {
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
         if (taskItem is null)

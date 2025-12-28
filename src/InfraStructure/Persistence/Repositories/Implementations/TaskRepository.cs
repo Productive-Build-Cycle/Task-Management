@@ -12,7 +12,7 @@ public class TaskRepository : ITaskRepository
     {
         _appDbContext = context;
     }
-    public async Task<List<TaskItem>> GetAllAsync()
+    public async Task<List<TaskItem>> GetAllAsync() // TODO WILL MODIFY TO AsQueryable
     {
         IQueryable<TaskItem> q = _appDbContext.TaskItems;
         
