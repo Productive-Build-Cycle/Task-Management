@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace TaskManagement.InfraStructure.Persistence.Configurations;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TaskManagement.Domain.Entities;
 using TaskManagement.Domain.Enum;
-
-namespace TaskManagement.InfraStructure.Persistence.Configurations;
-
 public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
 {
     public void Configure(EntityTypeBuilder<TaskItem> builder)
