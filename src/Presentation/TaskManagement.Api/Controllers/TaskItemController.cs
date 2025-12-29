@@ -53,7 +53,7 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpPut("{id:Guid}")]
-    public async Task<IActionResult> UpdateTaskItem([FromBody] TaskUpdateDto request, Guid id)
+    public async Task<IActionResult> UpdateTaskItem([FromBody] TaskUpdateDto request,[FromRoute] Guid id)
     {
         var res = await _taskService.Update(request, id);
         if (!res.IsSuccess)
@@ -88,7 +88,7 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteTaskItem(Guid id)
+    public async Task<IActionResult> DeleteTaskItem([FromRoute]Guid id)
     {
         var res = await _taskService.Delete(id);
         
