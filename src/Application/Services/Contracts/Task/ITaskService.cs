@@ -3,13 +3,16 @@ namespace Application.Services.Contracts.Task;
 using TaskManagement.Domain.Entities;
 using Application.Services.Dtos;
 using TaskManagement.Domain.Enum;
+using TaskManagement.Application.Wrapper;
+using Task = System.Threading.Tasks.Task;
+
 public interface ITaskService
 {
-    Task<List<TaskItem>> GetAllAsync(); //TODO HANDLE WITH RESULT PATTERN SOON
-    Task<TaskItem?> GetByIdAsync(Guid guid); //TODO HANDLE WITH RESULT PATTERN SOON
-    Task<TaskItem> AddAsync(TaskCreateDto request); //TODO HANDLE WITH RESULT PATTERN SOON
-    Task<TaskItem> Update(TaskUpdateDto request, Guid guid); //TODO HANDLE WITH RESULT PATTERN SOON
-    void Delete(TaskItem entity); //TODO HANDLE WITH RESULT PATTERN SOON
-    void ChangeWorkFlow(WorkFlow newWorkFlow, Guid guid); //TODO HANDLE WITH RESULT PATTERN SOON
-    void ChangePriority(Priority newPriority, Guid guid); //TODO HANDLE WITH RESULT PATTERN SOON
+    Task<Result<List<TaskItem>>> GetAllAsync(); 
+    Task<Result<TaskItem>> GetByIdAsync(Guid guid); 
+    Task<Result<TaskItem>> AddAsync(TaskCreateDto request); 
+    Task<Result<TaskItem>> Update(TaskUpdateDto request, Guid guid); 
+    Task<Result> Delete(Guid id); 
+    Task<Result> ChangeWorkFlow(WorkFlow newWorkFlow, Guid guid); 
+    Task<Result> ChangePriority(Priority newPriority, Guid guid);
 }

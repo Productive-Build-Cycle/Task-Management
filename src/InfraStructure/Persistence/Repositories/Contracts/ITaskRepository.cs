@@ -4,9 +4,9 @@ using Domain.Entities;
 
 public interface ITaskRepository
 {
-    Task<List<TaskItem>> GetAllAsync(); // TODO WILL MODIFY TO AsQueryable
+    IQueryable<TaskItem> GetAll();
     Task<TaskItem?> GetByIdAsync(Guid id);
-    void Create(TaskItem entity);
+    void AddAsync(TaskItem entity);
     void Update(TaskItem entity);
     void Delete(TaskItem entity);
 }

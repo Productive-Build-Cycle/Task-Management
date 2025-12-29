@@ -6,33 +6,45 @@ using TaskManagement.Domain.Entities;
 using TaskManagement.InfraStructure.Persistence.Repositories.Interfaces;
 using Dtos;
 using TaskManagement.Domain.Enum;
+using Microsoft.EntityFrameworkCore;
+using TaskManagement.Application.Wrapper;
 
 public class TaskService : ITaskService
 {
     private readonly ITaskRepository _taskRepository;
     private readonly IUnitOfWork _unitOfWork;
-
     public TaskService(ITaskRepository taskRepository, IUnitOfWork unitOfWork)
     {
         _taskRepository = taskRepository;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<List<TaskItem>> GetAllAsync() //TODO HANDLE WITH RESULT PATTERN SOON
+    public async Task<Result<List<TaskItem>>> GetAllAsync()
     {
-        return await _taskRepository.GetAllAsync();
+        var q = _taskRepository.GetAll();
+
+        var res = await q.ToListAsync();
+
+        return Result<List<TaskItem>>.Success(res);
     }
 
-    public async Task<TaskItem?> GetByIdAsync(Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
+    public async Task<Result<TaskItem>> GetByIdAsync(Guid id) 
     {
-        return await _taskRepository.GetByIdAsync(id);
+        var task = await _taskRepository.GetByIdAsync(id);
+
+        if (task is null)
+        {
+            return Result<TaskItem>.Failure("Task not found");
+        }
+        
+        return Result<TaskItem>.Success(task);
     }
 
-    public async Task<TaskItem> AddAsync(TaskCreateDto request) //TODO HANDLE WITH RESULT PATTERN SOON
+    public async Task<Result<TaskItem>> AddAsync(TaskCreateDto request)
     {
         if (request.DueDate <= DateTime.Now)
         {
-            throw new ArgumentException("DueDate must be in the future");
+            return Result<TaskItem>.Failure("Due date cannot be in the future");
         }
         
         TaskItem taskItem = new TaskItem()
@@ -44,23 +56,22 @@ public class TaskService : ITaskService
             DueDate = request.DueDate,
         };
         
-        _taskRepository.Create(taskItem);
+        _taskRepository.AddAsync(taskItem);
         await _unitOfWork.SaveChangesAsync();
 
-        return taskItem;
+        return Result<TaskItem>.Success(taskItem);
     }
 
-    public async Task<TaskItem> Update(TaskUpdateDto request, Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
+    public async Task<Result<TaskItem>> Update(TaskUpdateDto request, Guid id) 
     {
         if (request.DueDate <= DateTime.Now)
         {
-            throw new ArgumentException("DueDate must be in the future");
+            return Result<TaskItem>.Failure("Due date cannot be in the future");
         }
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
         if (taskItem is null)
         {
-            throw new ArgumentException("item not found");
-            //TODO HANDLE WITH RESULT PATTERN SOON
+            return Result<TaskItem>.Failure("Task not found");
         }
         taskItem.Name = request.Name;
         taskItem.Description = request.Description;
@@ -68,38 +79,45 @@ public class TaskService : ITaskService
         
         _taskRepository.Update(taskItem);
          await _unitOfWork.SaveChangesAsync();
-         return taskItem;
+         return Result<TaskItem>.Success(taskItem);
     }
-    public void Delete(TaskItem entity) //TODO HANDLE WITH RESULT PATTERN SOON
-    {
+    public async Task<Result> Delete(Guid id)
+    { 
+        var entity = await _taskRepository.GetByIdAsync(id);
+        if (entity is null)
+        {
+            return Result.Failure("Task not found");
+        }
+        
         _taskRepository.Delete(entity);
-        _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
+        return Result.Success();
     }
 
-    public async void ChangeWorkFlow(WorkFlow newWorkFlow, Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
+    public async Task<Result> ChangeWorkFlow(WorkFlow newWorkFlow, Guid id)
     {
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
         if (taskItem is null)
         {
-            throw new ArgumentException("item not found");
-            
-            // TODO HANDLE WITH RESULT PATTERN SOON
+            return Result.Failure("Task not found");
         }
         taskItem.WorkFlow = newWorkFlow;
         _taskRepository.Update(taskItem);
         await _unitOfWork.SaveChangesAsync();
+        
+        return Result.Success();
     }
 
-    public async void ChangePriority(Priority newPriority, Guid id) //TODO HANDLE WITH RESULT PATTERN SOON
+    public async Task<Result> ChangePriority(Priority newPriority, Guid id) 
     {
         TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
         if (taskItem is null)
         {
-            throw new ArgumentException("item not found");
-            // TODO HANDLE WITH RESULT PATTERN SOON
+            return Result.Failure("Task not found");
         }
         taskItem.Priority = newPriority;
         _taskRepository.Update(taskItem);
         await _unitOfWork.SaveChangesAsync();
+        return Result.Success();
     }
 }
