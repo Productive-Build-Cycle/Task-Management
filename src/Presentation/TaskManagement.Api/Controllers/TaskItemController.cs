@@ -1,9 +1,9 @@
 namespace Api.Controllers;
 
 using Application.Services.Contracts.Task;
-using Application.Services.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Domain.Enum;
+using Application.Services.Dtos.TaskItemDto;
 
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -48,7 +48,7 @@ public class TaskItemController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create([FromBody] TaskCreateDto request)
+    public async Task<IActionResult> Create([FromBody] TaskItemCreateDto request)
     {
        var res = await _taskService.AddAsync(request);
        if (!res.IsSuccess)
@@ -61,7 +61,7 @@ public class TaskItemController : ControllerBase
     [HttpPut("{id:Guid}")]
     [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] TaskUpdateDto request,[FromRoute] Guid id)
+    public async Task<IActionResult> Update([FromBody] TaskItemUpdateDto request,[FromRoute] Guid id)
     {
         var res = await _taskService.Update(request, id);
         if (!res.IsSuccess)
