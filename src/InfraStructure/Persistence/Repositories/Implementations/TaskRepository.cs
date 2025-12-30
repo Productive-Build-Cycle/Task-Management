@@ -12,13 +12,9 @@ public class TaskRepository : ITaskRepository
     {
         _appDbContext = context;
     }
-    public async Task<List<TaskItem>> GetAllAsync() // TODO WILL MODIFY TO AsQueryable
+    public IQueryable<TaskItem> GetAll()
     {
-        IQueryable<TaskItem> q = _appDbContext.TaskItems;
-        
-        // TODO APPY FILTERING AND ORDERING AND SEARCH
-        
-        return await q.ToListAsync();
+        return _appDbContext.TaskItems;
     }
 
     public async Task<TaskItem?> GetByIdAsync(Guid id)
@@ -26,18 +22,18 @@ public class TaskRepository : ITaskRepository
        return await _appDbContext.TaskItems.FirstOrDefaultAsync(t => t.GuidRow == id);
     }
 
-    public void Create(TaskItem entity)
+    public async Task AddAsync(TaskItem entity)
     {
-        _appDbContext.TaskItems.Add(entity);
+       await _appDbContext.TaskItems.AddAsync(entity);
     }
 
-    public void Update(TaskItem entity)
+    public async Task Update(TaskItem entity)
     {
         entity.MarkAsUpdated();
         _appDbContext.Entry(entity).State = EntityState.Modified;
     }
 
-    public void Delete(TaskItem entity)
+    public async Task Delete(TaskItem entity)
     {
         entity.MarkAsDeleted();
     }
