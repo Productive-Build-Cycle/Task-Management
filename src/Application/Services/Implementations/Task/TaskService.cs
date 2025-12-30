@@ -4,39 +4,56 @@ using TaskManagement.InfraStructure;
 using Application.Services.Contracts.Task;
 using TaskManagement.Domain.Entities;
 using TaskManagement.InfraStructure.Persistence.Repositories.Interfaces;
-using Dtos;
 using TaskManagement.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Wrapper;
+using Dtos.TaskItemDto;
+using MapsterMapper;
+using FluentValidation;
 
-public class TaskService(ITaskRepository taskRepository, IUnitOfWork unitOfWork) : ITaskService
+public class TaskService(
+    ITaskRepository taskRepository, 
+    IUnitOfWork unitOfWork,
+    IMapper mapper,
+    IValidator<TaskItemCreateDto> createValidator,
+    IValidator<TaskItemUpdateDto> updateValidator
+    
+    ) : ITaskService
 {
-    public async Task<Result<List<TaskItem>>> GetAllAsync()
+    public async Task<Result<List<TaskItemResponseDto>>> GetAllAsync()
     {
         var q = taskRepository.GetAll();
 
         var res = await q.ToListAsync();
 
-        return Result<List<TaskItem>>.Success(res);
+        var data = mapper.Map<List<TaskItemResponseDto>>(res);
+        return Result<List<TaskItemResponseDto>>.Success(data);
     }
 
-    public async Task<Result<TaskItem>> GetByIdAsync(Guid id) 
+    public async Task<Result<TaskItemResponseDto>> GetByIdAsync(Guid id) 
     {
         var task = await taskRepository.GetByIdAsync(id);
 
         if (task is null)
         {
-            return Result<TaskItem>.Failure("Task not found");
+            return Result<TaskItemResponseDto>.Failure("Task not found");
         }
         
-        return Result<TaskItem>.Success(task);
+        var data = mapper.Map<TaskItemResponseDto>(task);
+        
+        return Result<TaskItemResponseDto>.Success(data);
     }
 
-    public async Task<Result<Guid>> AddAsync(TaskCreateDto request)
+    public async Task<Result<Guid>> AddAsync(TaskItemCreateDto request)
     {
-        if (request.DueDate <= DateTime.Now)
+        var validationResult = await createValidator.ValidateAsync(request);
+        
+        if (!validationResult.IsValid)
         {
-            return Result<Guid>.Failure("Due date cannot be in the future");
+            var err = validationResult.Errors.First().ErrorMessage;
+            return Result<Guid>.Failure(
+                err
+            );
         }
         
         TaskItem taskItem = new TaskItem()
@@ -54,24 +71,35 @@ public class TaskService(ITaskRepository taskRepository, IUnitOfWork unitOfWork)
         return Result<Guid>.Success(taskItem.GuidRow);
     }
 
-    public async Task<Result<TaskItem>> Update(TaskUpdateDto request, Guid id) 
+    public async Task<Result<TaskItemResponseDto>> Update(TaskItemUpdateDto request, Guid id) 
     {
-        if (request.DueDate <= DateTime.Now)
+        
+        var validationResult = await updateValidator.ValidateAsync(request);
+        
+        if (!validationResult.IsValid)
         {
-            return Result<TaskItem>.Failure("Due date cannot be in the future");
+            var err = validationResult.Errors.First().ErrorMessage;
+            
+            return Result<TaskItemResponseDto>.Failure(
+                err
+            );
         }
+        
         TaskItem? taskItem = await taskRepository.GetByIdAsync(id);
         if (taskItem is null)
         {
-            return Result<TaskItem>.Failure("Task not found");
+            return Result<TaskItemResponseDto>.Failure("Task not found");
         }
         taskItem.Name = request.Name;
         taskItem.Description = request.Description;
         taskItem.DueDate = request.DueDate;
         
-        taskRepository.Update(taskItem);
+         await taskRepository.Update(taskItem);
          await unitOfWork.SaveChangesAsync();
-         return Result<TaskItem>.Success(taskItem);
+         
+        var data = mapper.Map<TaskItemResponseDto>(taskItem);
+         
+         return Result<TaskItemResponseDto>.Success(data);
     }
     public async Task<Result> Delete(Guid id)
     { 
