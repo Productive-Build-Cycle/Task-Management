@@ -9,19 +9,11 @@ using TaskManagement.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Application.Wrapper;
 
-public class TaskService : ITaskService
+public class TaskService(ITaskRepository taskRepository, IUnitOfWork unitOfWork) : ITaskService
 {
-    private readonly ITaskRepository _taskRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    public TaskService(ITaskRepository taskRepository, IUnitOfWork unitOfWork)
-    {
-        _taskRepository = taskRepository;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Result<List<TaskItem>>> GetAllAsync()
     {
-        var q = _taskRepository.GetAll();
+        var q = taskRepository.GetAll();
 
         var res = await q.ToListAsync();
 
@@ -30,7 +22,7 @@ public class TaskService : ITaskService
 
     public async Task<Result<TaskItem>> GetByIdAsync(Guid id) 
     {
-        var task = await _taskRepository.GetByIdAsync(id);
+        var task = await taskRepository.GetByIdAsync(id);
 
         if (task is null)
         {
@@ -40,11 +32,11 @@ public class TaskService : ITaskService
         return Result<TaskItem>.Success(task);
     }
 
-    public async Task<Result<TaskItem>> AddAsync(TaskCreateDto request)
+    public async Task<Result<Guid>> AddAsync(TaskCreateDto request)
     {
         if (request.DueDate <= DateTime.Now)
         {
-            return Result<TaskItem>.Failure("Due date cannot be in the future");
+            return Result<Guid>.Failure("Due date cannot be in the future");
         }
         
         TaskItem taskItem = new TaskItem()
@@ -56,10 +48,10 @@ public class TaskService : ITaskService
             DueDate = request.DueDate,
         };
         
-        _taskRepository.AddAsync(taskItem);
-        await _unitOfWork.SaveChangesAsync();
+        await taskRepository.AddAsync(taskItem);
+        await unitOfWork.SaveChangesAsync();
 
-        return Result<TaskItem>.Success(taskItem);
+        return Result<Guid>.Success(taskItem.GuidRow);
     }
 
     public async Task<Result<TaskItem>> Update(TaskUpdateDto request, Guid id) 
@@ -68,7 +60,7 @@ public class TaskService : ITaskService
         {
             return Result<TaskItem>.Failure("Due date cannot be in the future");
         }
-        TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
+        TaskItem? taskItem = await taskRepository.GetByIdAsync(id);
         if (taskItem is null)
         {
             return Result<TaskItem>.Failure("Task not found");
@@ -77,47 +69,47 @@ public class TaskService : ITaskService
         taskItem.Description = request.Description;
         taskItem.DueDate = request.DueDate;
         
-        _taskRepository.Update(taskItem);
-         await _unitOfWork.SaveChangesAsync();
+        taskRepository.Update(taskItem);
+         await unitOfWork.SaveChangesAsync();
          return Result<TaskItem>.Success(taskItem);
     }
     public async Task<Result> Delete(Guid id)
     { 
-        var entity = await _taskRepository.GetByIdAsync(id);
+        var entity = await taskRepository.GetByIdAsync(id);
         if (entity is null)
         {
             return Result.Failure("Task not found");
         }
         
-        _taskRepository.Delete(entity);
-        await _unitOfWork.SaveChangesAsync();
+        await taskRepository.Delete(entity);
+        await unitOfWork.SaveChangesAsync();
         return Result.Success();
     }
 
     public async Task<Result> ChangeWorkFlow(WorkFlow newWorkFlow, Guid id)
     {
-        TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
+        TaskItem? taskItem = await taskRepository.GetByIdAsync(id);
         if (taskItem is null)
         {
             return Result.Failure("Task not found");
         }
         taskItem.WorkFlow = newWorkFlow;
-        _taskRepository.Update(taskItem);
-        await _unitOfWork.SaveChangesAsync();
+        await taskRepository.Update(taskItem);
+        await unitOfWork.SaveChangesAsync();
         
         return Result.Success();
     }
 
     public async Task<Result> ChangePriority(Priority newPriority, Guid id) 
     {
-        TaskItem? taskItem = await _taskRepository.GetByIdAsync(id);
+        TaskItem? taskItem = await taskRepository.GetByIdAsync(id);
         if (taskItem is null)
         {
             return Result.Failure("Task not found");
         }
         taskItem.Priority = newPriority;
-        _taskRepository.Update(taskItem);
-        await _unitOfWork.SaveChangesAsync();
+        taskRepository.Update(taskItem);
+        await unitOfWork.SaveChangesAsync();
         return Result.Success();
     }
 }

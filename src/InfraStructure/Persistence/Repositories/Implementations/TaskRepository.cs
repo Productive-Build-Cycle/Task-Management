@@ -22,18 +22,18 @@ public class TaskRepository : ITaskRepository
        return await _appDbContext.TaskItems.FirstOrDefaultAsync(t => t.GuidRow == id);
     }
 
-    public void AddAsync(TaskItem entity)
+    public async Task AddAsync(TaskItem entity)
     {
-        _appDbContext.TaskItems.Add(entity);
+       await _appDbContext.TaskItems.AddAsync(entity);
     }
 
-    public void Update(TaskItem entity)
+    public async Task Update(TaskItem entity)
     {
         entity.MarkAsUpdated();
         _appDbContext.Entry(entity).State = EntityState.Modified;
     }
 
-    public void Delete(TaskItem entity)
+    public async Task Delete(TaskItem entity)
     {
         entity.MarkAsDeleted();
     }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Domain.Enum;
 
 [ApiController]
-[Route("api/v1/task")]
+[Route("api/v1/[controller]")]
 public class TaskItemController : ControllerBase
 {
     private readonly ITaskService _taskService;
@@ -17,6 +17,8 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetTaskItem()
     {
         var res =  await _taskService.GetAllAsync();
@@ -29,7 +31,9 @@ public class TaskItemController : ControllerBase
     }
     
     [HttpGet("{id:Guid}")]
-    public async Task<IActionResult> GetTaskItem(Guid id)
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetTaskItem([FromRoute] Guid id)
     {
         var res =  await _taskService.GetByIdAsync(id);
 
@@ -42,18 +46,22 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTaskItem([FromBody] TaskCreateDto request)
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> Create([FromBody] TaskCreateDto request)
     {
        var res = await _taskService.AddAsync(request);
        if (!res.IsSuccess)
        {
            return BadRequest(res.Error);
        }
-       return Created("", res.Value?.GuidRow);
+       return Created("", res);
     }
 
     [HttpPut("{id:Guid}")]
-    public async Task<IActionResult> UpdateTaskItem([FromBody] TaskUpdateDto request,[FromRoute] Guid id)
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Update([FromBody] TaskUpdateDto request,[FromRoute] Guid id)
     {
         var res = await _taskService.Update(request, id);
         if (!res.IsSuccess)
@@ -65,6 +73,8 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpPatch("change-workflow/{id:Guid}")]
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ChangeWorkFlowTaskItem([FromBody] WorkFlow workFlow, [FromRoute] Guid id)
     {
         Console.WriteLine(workFlow);
@@ -77,6 +87,8 @@ public class TaskItemController : ControllerBase
     }
     
     [HttpPatch("change-priority/{id:Guid}")]
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ChangePriorityTaskItem([FromBody] Priority newPriority, [FromRoute] Guid id)
     {
         var res = await _taskService.ChangePriority(newPriority, id);
@@ -88,7 +100,9 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpDelete("{id:Guid}")]
-    public async Task<IActionResult> DeleteTaskItem([FromRoute]Guid id)
+    [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Delete([FromRoute]Guid id)
     {
         var res = await _taskService.Delete(id);
         
