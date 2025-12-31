@@ -10,7 +10,8 @@ using TaskManagement.Application.Wrapper;
 using Dtos.TaskItemDto;
 using MapsterMapper;
 using FluentValidation;
-
+using Application.Services.Dtos;
+using TaskManagement.Domain;
 public class TaskService(
     ITaskRepository taskRepository, 
     IUnitOfWork unitOfWork,
@@ -23,7 +24,7 @@ public class TaskService(
     public async Task<Result<List<TaskItemResponseDto>>> GetAllAsync()
     {
         var q = taskRepository.GetAll();
-
+       
         var res = await q.ToListAsync();
 
         var data = mapper.Map<List<TaskItemResponseDto>>(res);
@@ -121,6 +122,16 @@ public class TaskService(
         {
             return Result.Failure("Task not found");
         }
+        
+        if (!Enum.IsDefined(typeof(WorkFlow), newWorkFlow))
+        {
+            return Result.Failure("Invalid workflow value");
+        }
+        
+        if (!WorkFlowStateMachine.CanTransition(taskItem.WorkFlow, newWorkFlow))
+            return Result.Failure(
+                $"Invalid workflow transition: {taskItem.WorkFlow} → {newWorkFlow}");
+        
         taskItem.WorkFlow = newWorkFlow;
         await taskRepository.Update(taskItem);
         await unitOfWork.SaveChangesAsync();
@@ -135,8 +146,13 @@ public class TaskService(
         {
             return Result.Failure("Task not found");
         }
+        
+        if (!Enum.IsDefined(typeof(Priority), newPriority))
+        {
+            return Result.Failure("Invalid Priority value");
+        }
         taskItem.Priority = newPriority;
-        taskRepository.Update(taskItem);
+        await taskRepository.Update(taskItem);
         await unitOfWork.SaveChangesAsync();
         return Result.Success();
     }
