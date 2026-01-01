@@ -21,7 +21,7 @@ public class TaskItemUpdateValidate : AbstractValidator<TaskItemUpdateDto>
         
         RuleFor(t => t.DueDate)
             .GreaterThan(DateTime.Now)
-            .WithMessage("DueDate cannot be in the future")
+            .WithMessage("DueDate cannot be in the past date")
             .NotEmpty().WithMessage("DueDate is required")
             .NotNull().WithMessage("DueDate is required")
             ;
