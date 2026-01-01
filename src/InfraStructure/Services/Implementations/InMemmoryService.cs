@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using TaskManagement.Application.Services.Contracts.Cache;
+using TaskManagement.InfraStructure.Services.Contracts;
 
-namespace TaskManagement.Application.Services.Implementations.Cache;
+namespace TaskManagement.InfraStructure.Services.Implementations;
 
 public class InMemmoryService(IMemoryCache cache) : ICacheService
 {

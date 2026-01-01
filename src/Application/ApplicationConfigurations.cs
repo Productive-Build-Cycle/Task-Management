@@ -1,10 +1,9 @@
 ﻿using Application.Services.Contracts.Task;
 using Application.Services.Implementations.Task;
-using Microsoft.Extensions.DependencyInjection;
-using TaskManagement.Application.Services.Contracts.Cache;
-using TaskManagement.Application.Services.Implementations.Cache;
-using Mapster;
 using FluentValidation;
+using Mapster;
+using Microsoft.Extensions.DependencyInjection;
+using TaskManagement.InfraStructure.Services.Implementations;
 
 namespace Application;
 
@@ -21,8 +20,6 @@ public static class ApplicationConfigurations
 
     private static void RegisterServices(this IServiceCollection services)
     {
-        services.AddSingleton<ICacheService, InMemmoryService>();
-
         services.AddScoped<ITaskService, TaskService>();
 
         services.AddMapster();
