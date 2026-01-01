@@ -1,4 +1,4 @@
-namespace TaskManagement.InfraStructure;
+namespace TaskManagement.InfraStructure.Persistence.UnitOfWorks;
 
 public interface IUnitOfWork
 {

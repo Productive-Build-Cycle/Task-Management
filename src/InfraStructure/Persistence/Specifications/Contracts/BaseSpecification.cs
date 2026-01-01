@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace TaskManagement.InfraStructure.Specifications.Contracts;
+namespace TaskManagement.InfraStructure.Persistence.Specifications.Contracts;
 
 public abstract class BaseSpecification<T> : ISpecification<T>
 {
@@ -35,6 +35,4 @@ public abstract class BaseSpecification<T> : ISpecification<T>
         Take = take;
         IsPagingEnabled = true;
     }
-    
-    
 }

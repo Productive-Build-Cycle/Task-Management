@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace TaskManagement.InfraStructure.Specifications.Contracts;
+namespace TaskManagement.InfraStructure.Persistence.Specifications.Contracts;
 
 public interface ISpecification<T>
 {

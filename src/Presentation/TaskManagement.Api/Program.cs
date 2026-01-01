@@ -9,16 +9,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddOpenApi();
-
-#region Add Dependecies
-
 builder.Services
     .RegisterApplicationConfigurations()
-    .RegisterInfraStructureConfigurations(builder.Configuration)
-    ;
-
-#endregion Add Dependecies
+    .RegisterInfraStructureConfigurations(builder.Configuration);
 
 var app = builder.Build();
 
@@ -27,8 +20,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
 
     app.UseSwaggerUI();
-
-    app.MapOpenApi();
 }
 
 builder.Services.AddCors();
