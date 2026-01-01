@@ -4,6 +4,8 @@ using Application.Services.Contracts.Task;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagement.Domain.Enum;
 using Application.Services.Dtos.TaskItemDto;
+using TaskManagement.Application.Services.Dtos.TaskItemDto;
+
 
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -19,9 +21,11 @@ public class TaskItemController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(Task<IActionResult>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetTaskItem()
+    public async Task<IActionResult> GetTaskItem(
+        [FromQuery] TaskQueryableDto queryableDto
+        )
     {
-        var res =  await _taskService.GetAllAsync();
+        var res =  await _taskService.GetAllAsync(queryableDto);
 
         if (!res.IsSuccess)
         {
@@ -55,7 +59,7 @@ public class TaskItemController : ControllerBase
        {
            return BadRequest(res.Error);
        }
-       return Created("", res);
+       return Created("", res.Value);
     }
 
     [HttpPut("{id:Guid}")]

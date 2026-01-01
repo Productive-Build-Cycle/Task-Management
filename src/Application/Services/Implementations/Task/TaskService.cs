@@ -10,22 +10,26 @@ using TaskManagement.Application.Wrapper;
 using Dtos.TaskItemDto;
 using MapsterMapper;
 using FluentValidation;
-using Application.Services.Dtos;
 using TaskManagement.Domain;
+using TaskManagement.Application.Services.Dtos.TaskItemDto;
+using TaskManagement.InfraStructure.Specifications;
 public class TaskService(
     ITaskRepository taskRepository, 
     IUnitOfWork unitOfWork,
     IMapper mapper,
     IValidator<TaskItemCreateDto> createValidator,
     IValidator<TaskItemUpdateDto> updateValidator
-    
     ) : ITaskService
 {
-    public async Task<Result<List<TaskItemResponseDto>>> GetAllAsync()
+    public async Task<Result<List<TaskItemResponseDto>>> GetAllAsync(TaskQueryableDto queryableDto)
     {
-        var q = taskRepository.GetAll();
+        var qdro = mapper.Map<InfraTaskQueryableDto>(queryableDto);
+        var spec = new TaskItemSpecification(qdro);
+        var q = taskRepository.GetAll(spec);
        
-        var res = await q.ToListAsync();
+        var res = await q
+            .AsNoTracking()
+            .ToListAsync();
 
         var data = mapper.Map<List<TaskItemResponseDto>>(res);
         return Result<List<TaskItemResponseDto>>.Success(data);

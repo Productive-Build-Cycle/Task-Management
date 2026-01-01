@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
 using Context;
 using Interfaces;
+using Specifications.Contracts;
+
 public class TaskRepository : ITaskRepository
 {
     private readonly AppDbContext _appDbContext;
@@ -12,9 +14,17 @@ public class TaskRepository : ITaskRepository
     {
         _appDbContext = context;
     }
-    public IQueryable<TaskItem> GetAll()
+    public IQueryable<TaskItem> GetAll(ISpecification<TaskItem>? specification)
     {
-        return _appDbContext.TaskItems;
+
+        if (specification is null)
+        {
+            return _appDbContext.TaskItems;
+        }
+        
+        return SpecificationEvaluator<TaskItem>
+            .GetQuery(
+                _appDbContext.TaskItems.AsQueryable(), specification);
     }
 
     public async Task<TaskItem?> GetByIdAsync(Guid id)
