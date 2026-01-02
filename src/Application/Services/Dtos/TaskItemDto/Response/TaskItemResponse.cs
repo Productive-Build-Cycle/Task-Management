@@ -1,7 +1,7 @@
-namespace Application.Services.Dtos.TaskItemDto;
+namespace TaskManagement.Application.Services.Dtos.TaskItemDto.Response;
 
 using TaskManagement.Domain.Enum;
-public record TaskItemResponseDto(
+public record TaskItemResponse(
     Guid GuidRow,
     string Name,
     string Description,

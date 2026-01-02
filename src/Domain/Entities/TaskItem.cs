@@ -1,4 +1,5 @@
-﻿using TaskManagement.Domain.Common;
+﻿using TaskManagement.Application.Wrapper;
+using TaskManagement.Domain.Common;
 using TaskManagement.Domain.Enum;
 
 #nullable enable
@@ -22,4 +23,18 @@ public class TaskItem : BaseEntity<long>
     public required Priority Priority { get; set; }
 
     #endregion Properties
+
+    #region Methods
+
+    public Result ChangeWorkFlow(WorkFlow newWorkFlow)
+    {
+        if (!WorkFlowStateMachine.CanTransition(WorkFlow, newWorkFlow))
+            return Result.Failure($"Invalid workflow transition: {WorkFlow} → {newWorkFlow}");
+
+        WorkFlow = newWorkFlow;
+
+        return Result.Success();
+    }
+
+    #endregion Methods
 }

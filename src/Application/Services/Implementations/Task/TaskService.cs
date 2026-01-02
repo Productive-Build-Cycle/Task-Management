@@ -1,163 +1,148 @@
+using Application.Services.Contracts.Task;
+using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
+using TaskManagement.Application.Services.Dtos.TaskItemDto;
+using TaskManagement.Application.Services.Dtos.TaskItemDto.Request;
+using TaskManagement.Application.Services.Dtos.TaskItemDto.Response;
+using TaskManagement.Application.Wrapper;
+using TaskManagement.Domain.Entities;
+using TaskManagement.Domain.Enum;
+using TaskManagement.InfraStructure;
+using TaskManagement.InfraStructure.Persistence.Repositories.Interfaces;
+using TaskManagement.InfraStructure.Persistence.Specifications;
+using TaskManagement.InfraStructure.Persistence.UnitOfWorks;
+
 namespace Application.Services.Implementations.Task;
 
-using TaskManagement.InfraStructure;
-using Application.Services.Contracts.Task;
-using TaskManagement.Domain.Entities;
-using TaskManagement.InfraStructure.Persistence.Repositories.Interfaces;
-using TaskManagement.Domain.Enum;
-using Microsoft.EntityFrameworkCore;
-using TaskManagement.Application.Wrapper;
-using Dtos.TaskItemDto;
-using MapsterMapper;
-using FluentValidation;
-using TaskManagement.Domain;
-using TaskManagement.Application.Services.Dtos.TaskItemDto;
-using TaskManagement.InfraStructure.Specifications;
 public class TaskService(
-    ITaskRepository taskRepository, 
+    ITaskRepository taskRepository,
     IUnitOfWork unitOfWork,
-    IMapper mapper,
-    IValidator<TaskItemCreateDto> createValidator,
-    IValidator<TaskItemUpdateDto> updateValidator
+    IMapper mapper
     ) : ITaskService
 {
-    public async Task<Result<List<TaskItemResponseDto>>> GetAllAsync(TaskQueryableDto queryableDto)
-    {
-        var qdro = mapper.Map<InfraTaskQueryableDto>(queryableDto);
-        var spec = new TaskItemSpecification(qdro);
-        var q = taskRepository.GetAll(spec);
-       
-        var res = await q
-            .AsNoTracking()
-            .ToListAsync();
+    #region Get All
 
-        var data = mapper.Map<List<TaskItemResponseDto>>(res);
-        return Result<List<TaskItemResponseDto>>.Success(data);
+    public async Task<Result<IList<TaskItemResponse>>> GetAllAsync(TaskQueryableDto queryableDto)
+    {
+        var infraTaskQueryableDto = mapper.Map<InfraTaskQueryableDto>(queryableDto);
+
+        var taskItemSpecification = new TaskItemSpecification(infraTaskQueryableDto);
+
+        var query = taskRepository.GetAll(taskItemSpecification);
+
+        var data = mapper.Map<List<TaskItemResponse>>(await query.ToListAsync());
+
+        return Result<IList<TaskItemResponse>>.Success(data);
     }
 
-    public async Task<Result<TaskItemResponseDto>> GetByIdAsync(Guid id) 
+    #endregion Get All
+
+    #region Get By Id
+
+    public async Task<Result<TaskItemResponse>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var task = await taskRepository.GetByIdAsync(id);
+        var task = await taskRepository.GetByIdAsync(id, cancellationToken);
 
         if (task is null)
-        {
-            return Result<TaskItemResponseDto>.Failure("Task not found");
-        }
-        
-        var data = mapper.Map<TaskItemResponseDto>(task);
-        
-        return Result<TaskItemResponseDto>.Success(data);
+            return Result<TaskItemResponse>.Failure(CommonMessages.NotFoundMessage);
+
+        return Result<TaskItemResponse>.Success(mapper.Map<TaskItemResponse>(task));
     }
 
-    public async Task<Result<Guid>> AddAsync(TaskItemCreateDto request)
+    #endregion Get By Id
+
+    #region Add
+
+    public async Task<Result<Guid>> AddAsync(TaskItemCreateRequest request, CancellationToken cancellationToken)
     {
-        var validationResult = await createValidator.ValidateAsync(request);
-        
-        if (!validationResult.IsValid)
-        {
-            var err = validationResult.Errors.First().ErrorMessage;
-            return Result<Guid>.Failure(
-                err
-            );
-        }
-        
-        TaskItem taskItem = new TaskItem()
-        {
-            UserId = request.UserId,
-            Name = request.Name,
-            Description = request.Description,
-            Priority = request.Priority,
-            DueDate = request.DueDate,
-        };
-        
-        await taskRepository.AddAsync(taskItem);
-        await unitOfWork.SaveChangesAsync();
+        var taskItem = mapper.Map<TaskItem>(request);
+
+        await taskRepository.AddAsync(taskItem, cancellationToken);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Guid>.Success(taskItem.GuidRow);
     }
 
-    public async Task<Result<TaskItemResponseDto>> Update(TaskItemUpdateDto request, Guid id) 
+    #endregion Add
+
+    #region Update
+
+    public async Task<Result> Update(TaskItemUpdateRequest request, Guid id, CancellationToken cancellationToken)
     {
-        
-        var validationResult = await updateValidator.ValidateAsync(request);
-        
-        if (!validationResult.IsValid)
-        {
-            var err = validationResult.Errors.First().ErrorMessage;
-            
-            return Result<TaskItemResponseDto>.Failure(
-                err
-            );
-        }
-        
-        TaskItem? taskItem = await taskRepository.GetByIdAsync(id);
+        TaskItem? taskItem = await taskRepository.GetByIdAsync(id, cancellationToken);
+
         if (taskItem is null)
-        {
-            return Result<TaskItemResponseDto>.Failure("Task not found");
-        }
-        taskItem.Name = request.Name;
-        taskItem.Description = request.Description;
-        taskItem.DueDate = request.DueDate;
-        
-         await taskRepository.Update(taskItem);
-         await unitOfWork.SaveChangesAsync();
-         
-        var data = mapper.Map<TaskItemResponseDto>(taskItem);
-         
-         return Result<TaskItemResponseDto>.Success(data);
+            return Result.Failure(CommonMessages.NotFoundMessage);
+
+        mapper.Map(request, taskItem);
+
+        taskRepository.Update(taskItem);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
-    public async Task<Result> Delete(Guid id)
-    { 
-        var entity = await taskRepository.GetByIdAsync(id);
+
+    #endregion Update
+
+    #region Delete
+
+    public async Task<Result> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        var entity = await taskRepository.GetByIdAsync(id, cancellationToken);
+
         if (entity is null)
-        {
-            return Result.Failure("Task not found");
-        }
-        
-        await taskRepository.Delete(entity);
-        await unitOfWork.SaveChangesAsync();
+            return Result.Failure(CommonMessages.NotFoundMessage);
+
+        taskRepository.Delete(entity);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
         return Result.Success();
     }
 
-    public async Task<Result> ChangeWorkFlow(WorkFlow newWorkFlow, Guid id)
+    #endregion Delete
+
+    #region Change Work Flow
+
+    public async Task<Result> ChangeWorkFlow(WorkFlow newWorkFlow, Guid id, CancellationToken cancellationToken)
     {
-        TaskItem? taskItem = await taskRepository.GetByIdAsync(id);
+        var taskItem = await taskRepository.GetByIdAsync(id, cancellationToken);
+
         if (taskItem is null)
-        {
-            return Result.Failure("Task not found");
-        }
-        
-        if (!Enum.IsDefined(typeof(WorkFlow), newWorkFlow))
-        {
-            return Result.Failure("Invalid workflow value");
-        }
-        
-        if (!WorkFlowStateMachine.CanTransition(taskItem.WorkFlow, newWorkFlow))
-            return Result.Failure(
-                $"Invalid workflow transition: {taskItem.WorkFlow} → {newWorkFlow}");
-        
-        taskItem.WorkFlow = newWorkFlow;
-        await taskRepository.Update(taskItem);
-        await unitOfWork.SaveChangesAsync();
-        
+            return Result.Failure(CommonMessages.NotFoundMessage);
+
+        var result = taskItem.ChangeWorkFlow(newWorkFlow);
+
+        if (!result.IsSuccess)
+            return result;
+
+        taskRepository.Update(taskItem);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
         return Result.Success();
     }
 
-    public async Task<Result> ChangePriority(Priority newPriority, Guid id) 
+    #endregion Change Work Flow
+
+    #region Change Priority
+
+    public async Task<Result> ChangePriority(Priority newPriority, Guid id, CancellationToken cancellationToken)
     {
-        TaskItem? taskItem = await taskRepository.GetByIdAsync(id);
+        TaskItem? taskItem = await taskRepository.GetByIdAsync(id, cancellationToken);
+
         if (taskItem is null)
-        {
-            return Result.Failure("Task not found");
-        }
-        
-        if (!Enum.IsDefined(typeof(Priority), newPriority))
-        {
-            return Result.Failure("Invalid Priority value");
-        }
+            return Result.Failure(CommonMessages.NotFoundMessage);
+
         taskItem.Priority = newPriority;
-        await taskRepository.Update(taskItem);
-        await unitOfWork.SaveChangesAsync();
+
+        taskRepository.Update(taskItem);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
         return Result.Success();
     }
+
+    #endregion Change Priority
 }

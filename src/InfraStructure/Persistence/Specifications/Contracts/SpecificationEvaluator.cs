@@ -1,6 +1,7 @@
-namespace TaskManagement.InfraStructure.Specifications.Contracts;
+namespace TaskManagement.InfraStructure.Persistence.Specifications.Contracts;
 
 using Microsoft.EntityFrameworkCore;
+
 public class SpecificationEvaluator<T> where T : class
 {
     public static IQueryable<T> GetQuery(

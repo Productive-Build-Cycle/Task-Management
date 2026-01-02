@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="WorkFlowStateMachine\" />
+    <Compile Remove="WorkFlowStateMachine\**" />
+    <EmbeddedResource Remove="WorkFlowStateMachine\**" />
+    <None Remove="WorkFlowStateMachine\**" />
   </ItemGroup>
 
 </Project>
