@@ -11,11 +11,13 @@ using TaskManagement.InfraStructure;
 using TaskManagement.InfraStructure.Persistence.Repositories.Interfaces;
 using TaskManagement.InfraStructure.Persistence.Specifications;
 using TaskManagement.InfraStructure.Persistence.UnitOfWorks;
+using TaskManagement.InfraStructure.Services.Contracts;
 
 namespace Application.Services.Implementations.Task;
 
 public class TaskService(
     ITaskRepository taskRepository,
+    ICacheService cacheService,
     IUnitOfWork unitOfWork,
     IMapper mapper
     ) : ITaskService
@@ -55,6 +57,11 @@ public class TaskService(
 
     public async Task<Result<Guid>> AddAsync(TaskItemCreateRequest request, CancellationToken cancellationToken)
     {
+        var user = await cacheService.GetAsync<Dictionary<string, string>>(request.UserId.ToString());
+
+        if (user is null)
+            throw new Exception("User Not Found");
+
         var taskItem = mapper.Map<TaskItem>(request);
 
         await taskRepository.AddAsync(taskItem, cancellationToken);

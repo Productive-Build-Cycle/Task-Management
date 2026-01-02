@@ -1,4 +1,4 @@
-﻿namespace TaskManagement.Application.Services.Contracts.Cache;
+﻿namespace TaskManagement.InfraStructure.Services.Contracts;
 
 public interface ICacheService
 {
