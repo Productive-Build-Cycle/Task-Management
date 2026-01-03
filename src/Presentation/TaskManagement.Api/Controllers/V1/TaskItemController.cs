@@ -13,7 +13,8 @@ public class TaskItemController(
     IValidator<TaskItemCreateRequest> createValidator,
     IValidator<TaskItemUpdateRequest> updateValidator,
     IValidator<ChangeWorkFlowRequest> changeWorkFlowValidator,
-    IValidator<ChangePriorityRequest> changePriorityValidator
+    IValidator<ChangePriorityRequest> changePriorityValidator,
+    IValidator<ReAssignRequest> reAssignRequestValidator
     ) : BaseController
 {
     #region Get All
@@ -28,7 +29,7 @@ public class TaskItemController(
         if (result.IsSuccess is false)
             return BadRequest(result.Error);
 
-        return Ok(result.Value);
+        return Ok(result);
     }
 
     #endregion Get All
@@ -46,7 +47,7 @@ public class TaskItemController(
         if (result.IsSuccess is false)
             return NotFound(result.Error);
 
-        return Ok(result.Value);
+        return Ok(result);
     }
 
     #endregion Get By Id
@@ -156,4 +157,28 @@ public class TaskItemController(
     }
 
     #endregion Change Priority
+
+    #region ReAssign
+
+    [HttpPatch("reassign/{id:Guid}")]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ReAssign([FromBody] ReAssignRequest request,
+        [FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var validationResult = await reAssignRequestValidator.ValidateAsync(request, cancellationToken);
+        if (validationResult.IsValid is false)
+            return BadRequest(validationResult.Errors.First().ErrorMessage);
+
+        var result = await taskService.ReAssign(request.UserId, id, cancellationToken);
+
+        if (result.IsSuccess is false)
+            return BadRequest(result.Error);
+
+        return NoContent();
+    }
+    
+
+    #endregion
 }

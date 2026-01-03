@@ -150,6 +150,33 @@ public class TaskService(
 
         return Result.Success();
     }
-
     #endregion Change Priority
+
+    #region ReAssign
+    
+    public async Task<Result> ReAssign(int userId, Guid id, CancellationToken cancellationToken)
+    {
+        var taskItem = await taskRepository.GetByIdAsync(id, cancellationToken);
+
+        if (taskItem is null)
+            return Result.Failure(CommonMessages.NotFoundMessage);
+        
+        var user = await cacheService.GetAsync<Dictionary<string, string>>(userId.ToString());
+
+        if (user is null)
+            throw new Exception("User Not Found");
+        
+        var result = taskItem.ReAssign(userId);
+
+        if (!result.IsSuccess)
+            return result;
+
+        taskRepository.Update(taskItem);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        return Result.Success();
+        
+    }
+    #endregion ReAssign
+
 }

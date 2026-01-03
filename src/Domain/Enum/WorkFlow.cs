@@ -2,7 +2,7 @@
 
 public enum WorkFlow : byte
 {
-    TODO = 0,
-    InProgress = 1,
-    Done = 2
+    TODO = 1,
+    InProgress = 2,
+    Done = 3
 }
