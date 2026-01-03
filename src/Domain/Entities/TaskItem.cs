@@ -36,5 +36,11 @@ public class TaskItem : BaseEntity<long>
         return Result.Success();
     }
 
+    public Result ReAssign(int userId)
+    {
+        UserId = userId;
+        return Result.Success();
+    }
+
     #endregion Methods
 }

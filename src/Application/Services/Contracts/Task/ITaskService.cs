@@ -21,4 +21,6 @@ public interface ITaskService
     Task<Result> ChangeWorkFlow(WorkFlow newWorkFlow, Guid guid, CancellationToken cancellationToken);
 
     Task<Result> ChangePriority(Priority newPriority, Guid guid, CancellationToken cancellationToken);
+    
+    Task<Result> ReAssign(int userId,Guid guid, CancellationToken cancellationToken);
 }

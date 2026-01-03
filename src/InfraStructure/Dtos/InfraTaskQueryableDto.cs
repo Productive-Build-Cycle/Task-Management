@@ -8,5 +8,8 @@ public record InfraTaskQueryableDto(
     Priority? Priority ,
     int? PageNumber ,
     int? PageSize ,
-    bool SortByDueDateDesc )
+    bool? SortByDueDateDesc,
+    bool? SortByPriorityDesc,
+    bool? SortByWorkFlowDesc
+    )
 ;
