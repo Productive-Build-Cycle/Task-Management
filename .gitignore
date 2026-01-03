@@ -37,3 +37,10 @@ node_modules/
 
 # Publish output
 publish/
+
+# BuildHost folders
+**/BuildHost-net472/
+**/BuildHost-netcore/
+
+# Visual Studio Dependencies (Solution Explorer)
+**/Dependencies/
