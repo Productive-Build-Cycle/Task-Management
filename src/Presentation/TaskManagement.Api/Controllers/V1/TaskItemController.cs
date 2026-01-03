@@ -28,7 +28,7 @@ public class TaskItemController(
         if (result.IsSuccess is false)
             return BadRequest(result.Error);
 
-        return Ok(result.Value);
+        return Ok(result);
     }
 
     #endregion Get All
@@ -46,7 +46,7 @@ public class TaskItemController(
         if (result.IsSuccess is false)
             return NotFound(result.Error);
 
-        return Ok(result.Value);
+        return Ok(result);
     }
 
     #endregion Get By Id
