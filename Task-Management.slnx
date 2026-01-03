@@ -1,4 +1,16 @@
 <Solution>
   <Folder Name="/src/" />
+  <Folder Name="/src/Application/">
+    <Project Path="src/Application/TaskManagement.Application.csproj" Id="484e92a6-6598-4644-a0e4-9f21c1b484ff" />
+  </Folder>
+  <Folder Name="/src/Domain/">
+    <Project Path="src/Domain/TaskManagement.Domain.csproj" Id="26200d61-a40e-4bbe-a2d5-76341a595846" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/InfraStructure/TaskManagement.InfraStructure.csproj" Id="1561a7df-464f-4f1e-988c-343fa24848db" />
+  </Folder>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/TaskManagement.Api/TaskManagement.Api.csproj" />
+  </Folder>
   <Folder Name="/test/" />
 </Solution>
